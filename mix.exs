@@ -5,7 +5,7 @@ defmodule Exmqttc.Mixfile do
     [
       app: :exmqttc,
       version: "0.6.1",
-      elixir: "~> 1.7",
+      elixir: "~> 1.6",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -33,7 +33,7 @@ defmodule Exmqttc.Mixfile do
   defp deps do
     [
       {:emqttc, github: "emqtt/emqttc", only: [:dev, :test]},
-      {:elixir_uuid, "~> 1.2"},
+      {:uuid, "~> 1.1"},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
       {:credo, "~> 0.10", only: [:dev, :test], runtime: false},
