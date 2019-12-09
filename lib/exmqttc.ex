@@ -80,7 +80,7 @@ defmodule Exmqttc do
   """
   @spec publish(pid, binary, binary, list) :: :ok
   def publish(pid, topic, payload, opts \\ []) do
-    GenServer.call(pid, {:publish_message, topic, payload, opts})
+    GenServer.cast(pid, {:publish_message, topic, payload, opts})
   end
 
   @doc """
@@ -101,6 +101,7 @@ defmodule Exmqttc do
   end
 
   # GenServer callbacks
+  @impl GenServer
   def init([callback_module, opts, params]) do
     # start callback handler
     {:ok, callback_pid} = Exmqttc.Callback.start_link(callback_module, params)
@@ -114,63 +115,74 @@ defmodule Exmqttc do
     {:ok, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_call({:sync_subscribe_topics, topics}, _from, {mqtt_pid, callback_pid}) do
     res = :emqttc.sync_subscribe(mqtt_pid, topics)
     {:reply, res, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_call({:sync_publish_message, topic, payload, opts}, _from, {mqtt_pid, callback_pid}) do
     res = :emqttc.sync_publish(mqtt_pid, topic, payload, opts)
     {:reply, res, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_call({:subscribe_topics, topics, qos}, _from, {mqtt_pid, callback_pid}) do
     :ok = :emqttc.subscribe(mqtt_pid, topics, qos)
     {:reply, :ok, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_call({:unsubscribe_topics, topics}, _from, {mqtt_pid, callback_pid}) do
     :ok = :emqttc.unsubscribe(mqtt_pid, topics)
     {:reply, :ok, {mqtt_pid, callback_pid}}
   end
 
-  def handle_call({:publish_message, topic, payload, opts}, _from, {mqtt_pid, callback_pid}) do
-    :emqttc.publish(mqtt_pid, topic, payload, opts)
-    {:reply, :ok, {mqtt_pid, callback_pid}}
-  end
-
+  @impl GenServer
   def handle_call(:disconnect, _from, {mqtt_pid, callback_pid}) do
     :emqttc.disconnect(mqtt_pid)
     {:reply, :ok, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_call(message, _from, state = {_mqtt_pid, callback_pid}) do
     reply = GenServer.call(callback_pid, message)
     {:reply, reply, state}
   end
 
+  @impl GenServer
+  def handle_cast({:publish_message, topic, payload, opts}, state = {mqtt_pid, _callback_pid}) do
+    :emqttc.publish(mqtt_pid, topic, payload, opts)
+    {:noreply, state}
+  end
+
+  @impl GenServer
   def handle_cast(message, state = {_mqtt_pid, callback_pid}) do
     GenServer.cast(callback_pid, message)
     {:noreply, state}
   end
 
   # emqttc messages
-
+  @impl GenServer
   def handle_info({:mqttc, _pid, :connected}, {mqtt_pid, callback_pid}) do
     GenServer.cast(callback_pid, :connect)
     {:noreply, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_info({:mqttc, _pid, :disconnected}, {mqtt_pid, callback_pid}) do
     GenServer.cast(callback_pid, :disconnect)
     {:noreply, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_info({:publish, topic, message}, {mqtt_pid, callback_pid}) do
     GenServer.cast(callback_pid, {:publish, topic, message})
     {:noreply, {mqtt_pid, callback_pid}}
   end
 
+  @impl GenServer
   def handle_info(message, state = {_mqtt_pid, callback_pid}) do
     send(callback_pid, message)
     {:noreply, state}
