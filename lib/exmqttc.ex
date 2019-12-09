@@ -142,7 +142,8 @@ defmodule Exmqttc do
   @impl GenServer
   def handle_call(:disconnect, _from, {mqtt_pid, callback_pid}) do
     :emqttc.disconnect(mqtt_pid)
-    {:reply, :ok, {mqtt_pid, callback_pid}}
+    :ok = GenServer.call(callback_pid, :stop)
+    {:stop, :normal, :ok, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
