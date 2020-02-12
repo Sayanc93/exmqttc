@@ -154,10 +154,7 @@ defmodule Exmqttc do
 
   @impl GenServer
   def handle_cast({:publish_message, topic, payload, opts}, state = {mqtt_pid, _callback_pid}) do
-    res = :emqttc.publish(mqtt_pid, topic, payload, opts)
-    if (String.contains?(topic, "5a6740542b6a07160ec6704d")) do
-      :ets.insert(:publish_time, {topic <> "exmqttc", "#{DateTime.utc_now()}, res: #{inspect(res)}"})
-    end
+    :emqttc.publish(mqtt_pid, topic, payload, opts)
     {:noreply, state}
   end
 
