@@ -2,7 +2,7 @@ defmodule Exmqttc do
   use GenServer
 
   @moduledoc """
-  `Exmqttc` provides a connection to a MQTT server based on [emqttc](https://github.com/emqtt/emqttc)
+  `Exmqttc` provides a connection to a MQTT server based on [emqtt](https://github.com/emqtt/emqtt)
   """
 
   @typedoc """
@@ -110,11 +110,11 @@ defmodule Exmqttc do
       opts
       |> Keyword.put_new_lazy(:client_id, fn -> UUID.uuid4() end)
       |> map_options
-      |> :emqttc.start_link()
+      |> :emqtt.start_link()
 
     {:ok, _props} = case opts.protocol do
-      "websocket" -> :emqttc.ws_connect(mqtt_pid)
-      _ -> :emqttc.connect(mqtt_pid)
+      "websocket" -> :emqtt.ws_connect(mqtt_pid)
+      _ -> :emqtt.connect(mqtt_pid)
     end
 
     {:ok, {mqtt_pid, callback_pid}}
@@ -122,31 +122,31 @@ defmodule Exmqttc do
 
   @impl GenServer
   def handle_call({:sync_subscribe_topics, topics}, _from, {mqtt_pid, callback_pid}) do
-    res = :emqttc.sync_subscribe(mqtt_pid, topics)
+    res = :emqtt.sync_subscribe(mqtt_pid, topics)
     {:reply, res, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
   def handle_call({:sync_publish_message, topic, payload, opts}, _from, {mqtt_pid, callback_pid}) do
-    res = :emqttc.sync_publish(mqtt_pid, topic, payload, opts)
+    res = :emqtt.sync_publish(mqtt_pid, topic, payload, opts)
     {:reply, res, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
   def handle_call({:subscribe_topics, topics, qos}, _from, {mqtt_pid, callback_pid}) do
-    :ok = :emqttc.subscribe(mqtt_pid, topics, qos)
+    :ok = :emqtt.subscribe(mqtt_pid, topics, qos)
     {:reply, :ok, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
   def handle_call({:unsubscribe_topics, topics}, _from, {mqtt_pid, callback_pid}) do
-    :ok = :emqttc.unsubscribe(mqtt_pid, topics)
+    :ok = :emqtt.unsubscribe(mqtt_pid, topics)
     {:reply, :ok, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
   def handle_call(:disconnect, _from, {mqtt_pid, callback_pid}) do
-    :emqttc.disconnect(mqtt_pid)
+    :emqtt.disconnect(mqtt_pid)
     :ok = GenServer.call(callback_pid, :stop)
     {:stop, :normal, :ok, {mqtt_pid, callback_pid}}
   end
@@ -159,7 +159,7 @@ defmodule Exmqttc do
 
   @impl GenServer
   def handle_cast({:publish_message, topic, payload, opts}, state = {mqtt_pid, _callback_pid}) do
-    :emqttc.publish(mqtt_pid, topic, payload, opts)
+    :emqtt.publish(mqtt_pid, topic, payload, opts)
     {:noreply, state}
   end
 
@@ -169,7 +169,7 @@ defmodule Exmqttc do
     {:noreply, state}
   end
 
-  # emqttc messages
+  # emqtt messages
   @impl GenServer
   def handle_info({:mqttc, _pid, :connected}, {mqtt_pid, callback_pid}) do
     GenServer.cast(callback_pid, :connect)

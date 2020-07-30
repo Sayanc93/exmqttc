@@ -8,6 +8,7 @@
   "earmark": {:hex, :earmark, "1.2.6", "b6da42b3831458d3ecc57314dff3051b080b9b2be88c2e5aa41cd642a5b044ed", [:mix], [], "hexpm", "b42a23e9bd92d65d16db2f75553982e58519054095356a418bb8320bbacb58b1"},
   "ekka": {:git, "https://github.com/emqx/ekka", "bbd91888b515cb07499e070c102fc382291366c9", [tag: "0.7.3"]},
   "elixir_uuid": {:hex, :elixir_uuid, "1.2.0", "ff26e938f95830b1db152cb6e594d711c10c02c6391236900ddd070a6b01271d", [:mix], [], "hexpm"},
+  "emqtt": {:git, "https://github.com/emqtt/emqtt.git", "961e7b98182e1f34a5372a44d8c9e1b96a042d69", []},
   "emqttc": {:git, "https://github.com/emqtt/emqtt.git", "961e7b98182e1f34a5372a44d8c9e1b96a042d69", []},
   "eqc_ex": {:hex, :eqc_ex, "1.4.2", "c89322cf8fbd4f9ddcb18141fb162a871afd357c55c8c0198441ce95ffe2e105", [:mix], []},
   "esockd": {:git, "https://github.com/emqx/esockd", "87ac8aa52086d3a536b5c2805e1f944a00b05930", [tag: "5.7.1"]},
