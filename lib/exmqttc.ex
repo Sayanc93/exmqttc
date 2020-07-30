@@ -112,7 +112,7 @@ defmodule Exmqttc do
       |> map_options
       |> :emqttc.start_link()
 
-    {:ok, _props} = cond opts.protocol == "websocket" do
+    {:ok, _props} = case opts.protocol == "websocket" do
       true -> :emqttc.ws_connect(mqtt_pid)
       false -> :emqttc.connect(mqtt_pid)
     end
