@@ -32,12 +32,13 @@ defmodule Exmqttc.Mixfile do
 
   defp deps do
     [
-      {:emqttc, github: "emqtt/emqttc", only: [:dev, :test]},
+      {:emqttc, github: "emqtt/emqtt", only: [:dev, :test]},
       {:uuid, "~> 1.1"},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
       {:credo, "~> 0.10", only: [:dev, :test], runtime: false},
-      {:inch_ex, "~> 1.0", only: :dev}
+      {:inch_ex, "~> 1.0", only: :dev},
+      {:jiffy, ">= 0.0.0", [only: [:dev, :test], env: :prod, git: "https://github.com/emqx/jiffy", tag: "1.0.4", manager: :rebar3, override: true]}
     ]
   end
 end
