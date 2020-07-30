@@ -19,6 +19,12 @@ defmodule ExmqttcTest do
     Exmqttc.disconnect(pid)
   end
 
+  test "connect over websockets" do
+    {:ok, pid} = Exmqttc.start_link(Exmqttc.Testclient, [name: :my_client, protocol: "websockets"], host: '127.0.0.1')
+    assert_receive :connected, 250
+    Exmqttc.disconnect(pid)
+  end
+
   test "connecting with enhanced options" do
     {:ok, pid} =
       Exmqttc.start_link(
