@@ -112,7 +112,7 @@ defmodule Exmqttc do
       |> map_options
       |> :emqtt.start_link()
 
-    {:ok, _props} = case opts.protocol do
+    {:ok, _props} = case Keyword.get(opts, :protocol) do
       "websocket" -> :emqtt.ws_connect(mqtt_pid)
       _ -> :emqtt.connect(mqtt_pid)
     end
