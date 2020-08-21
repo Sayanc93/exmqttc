@@ -19,3 +19,9 @@ erl_crash.dump
 
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
+
+# if you're using elixirls
+.elixir_ls/
+
+# if you're using asdf
+.tool-versions

@@ -59,14 +59,6 @@ defmodule Exmqttc do
   end
 
   @doc """
-  Subscribe to the given topics while blocking until the subscribtion has been confirmed by the server.
-  """
-  @spec sync_subscribe(pid, topics) :: :ok
-  def sync_subscribe(pid, topics) do
-    GenServer.call(pid, {:sync_subscribe_topics, topics})
-  end
-
-  @doc """
   Unsubscribe from the given topic(s) given as `topics`.
   """
   @spec unsubscribe(pidlike, topics) :: :ok
@@ -121,27 +113,21 @@ defmodule Exmqttc do
   end
 
   @impl GenServer
-  def handle_call({:sync_subscribe_topics, topics}, _from, {mqtt_pid, callback_pid}) do
-    res = :emqtt.sync_subscribe(mqtt_pid, topics)
-    {:reply, res, {mqtt_pid, callback_pid}}
-  end
-
-  @impl GenServer
   def handle_call({:sync_publish_message, topic, payload, opts}, _from, {mqtt_pid, callback_pid}) do
-    res = :emqtt.sync_publish(mqtt_pid, topic, payload, opts)
-    {:reply, res, {mqtt_pid, callback_pid}}
+    response = :emqtt.publish(mqtt_pid, topic, payload, opts)
+    {:reply, response, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
   def handle_call({:subscribe_topics, topics, qos}, _from, {mqtt_pid, callback_pid}) do
-    :ok = :emqtt.subscribe(mqtt_pid, topics, qos)
-    {:reply, :ok, {mqtt_pid, callback_pid}}
+    response = :emqtt.subscribe(mqtt_pid, topics, qos)
+    {:reply, response, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
   def handle_call({:unsubscribe_topics, topics}, _from, {mqtt_pid, callback_pid}) do
-    :ok = :emqtt.unsubscribe(mqtt_pid, topics)
-    {:reply, :ok, {mqtt_pid, callback_pid}}
+    response = :emqtt.unsubscribe(mqtt_pid, topics)
+    {:reply, response, {mqtt_pid, callback_pid}}
   end
 
   @impl GenServer
