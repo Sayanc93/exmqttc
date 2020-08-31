@@ -32,7 +32,7 @@ defmodule Exmqttc.Mixfile do
 
   defp deps do
     [
-      {:emqttc, github: "emqtt/emqttc", only: [:dev, :test]},
+      {:emqttc, git: "https://github.com/emqx/emqtt", ref: "1a0d45085b987bdca74a6efbdc18aa5af85bfc43"},
       {:uuid, "~> 1.1"},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
